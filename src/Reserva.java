@@ -6,4 +6,5 @@ public class Reserva
     private int xinicial;
     private int yinicial;
     private LocalDateTime dataDaReserva;
+    private String codigo;
 }
