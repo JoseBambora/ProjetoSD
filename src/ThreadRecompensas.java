@@ -5,27 +5,21 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ThreadRecompensas implements Runnable
-{
-    private Map<String,Recompensa> recompensas;
-    private Integer[][] mapa; // número de trotinetes em cada posição
-    private ReentrantReadWriteLock recompensasLock;
-    private ReentrantReadWriteLock mapaLock;
+{private Server server;
     private Lock lock;
+    private Condition condition;
 
-    public ThreadRecompensas(Map<String, Recompensa> recompensas, Integer[][] mapa, ReentrantReadWriteLock recompensasLock, ReentrantReadWriteLock mapaLock, Lock lock)
+    public ThreadRecompensas(Server server, Lock lock, Condition condition)
     {
-        this.recompensas = recompensas;
-        this.mapa = mapa;
-        this.mapaLock = mapaLock;
-        this.recompensasLock = recompensasLock;
+        this.server = server;
         this.lock = lock;
+        this.condition = condition;
     }
 
     @Override
     public void run()
     {
         lock.lock();
-        Condition condition = lock.newCondition();
         while(true)
         {
             try
@@ -34,17 +28,12 @@ public class ThreadRecompensas implements Runnable
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            mapaLock.readLock().lock();
-            // avaliar mapa
-            // gerar recompensa se necessário
-            if(true) // gera recompensa
+            System.out.println("Acordei!!");
+            Recompensa recompensa = server.avaliaMapa();
+            if(recompensa != null)
             {
-                // gera objeto recompensa
-                recompensasLock.writeLock().lock();
-                //recompensas.put(recompensa.getCod(),recompensa);
-                recompensasLock.writeLock().unlock();
+                server.addRecompensa(recompensa);
             }
-            mapaLock.readLock().unlock();
         }
     }
 }
