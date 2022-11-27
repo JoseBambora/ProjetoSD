@@ -16,6 +16,9 @@ public class ThreadTeste implements Runnable
         if(!server.verificaCredenciais(id.toString(),Integer.toString(id)))
             System.out.println("Erro verifica credenciais 2 " + id);
         String cod = server.addReserva(String.valueOf(id));
-        float preço = server.estacionamento(cod, id + 1, id + 1);
+        float preco = server.estacionamento(cod, id + 1, id + 1);
+        if(preco == 0)
+            System.out.println("Erro estacionamento preço");
+
     }
 }

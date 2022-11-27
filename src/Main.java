@@ -1,16 +1,14 @@
+import java.util.List;
+import java.util.Map;
+
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         int num = 10;
         for(int j = 0; j < 1; j++)
         {
             Server server = new Server(10,30);
-            Thread[] threads1 = new Thread[num];
             for(int i = 0; i < num; i++)
-                threads1[i] = new Thread(new ThreadAddTrotinete(server,i));
-            for(int i = 0; i < num; i++)
-                threads1[i].start();
-            for(int i = 0; i < num; i++)
-                threads1[i].join();
+                server.addTrotinete(i,i);
             Thread[] threads = new Thread[num];
             for(int i = 0; i < num; i++)
                 threads[i] = new Thread(new ThreadTeste(server,i));
@@ -19,6 +17,29 @@ public class Main {
             for(int i = 0; i < num; i++)
                 threads[i].join();
             server.terminaServidor();
+            Map<String,Cliente> clienteMap = server.getClientes();
+            Map<String,Recompensa> recompensas = server.getRecompensas();
+            Map<String,Reserva> reservas = server.getReservas();
+            Map<String,Trotinete> troti = server.getTrotinetes();
+            if(clienteMap.size() != 10)
+                System.out.println("Erro add clientes");
+            if(troti.size() != 10)
+                System.out.println("Erro add troti");
+            if(reservas.size() != 10)
+                System.out.println("Erro reservas");
+            if(recompensas.size() != 0)
+            {
+                System.out.println("Erro recompensas " + recompensas.size());
+                List<List<Integer>> map = server.getMapa();
+                for(Recompensa recompensa : recompensas.values())
+                {
+                    System.out.println("=============================");
+                    System.out.println("(" + recompensa.getXi() + "," + recompensa.getYi() + ")");
+                    System.out.println(map.get(recompensa.getYi()).get(recompensa.getXi()));
+                    System.out.println("(" + recompensa.getXf() + "," + recompensa.getYf() + ")");
+                    System.out.println(map.get(recompensa.getYf()).get(recompensa.getXf()));
+                }
+            }
         }
     }
 }

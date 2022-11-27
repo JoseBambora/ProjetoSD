@@ -1,11 +1,9 @@
-import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ThreadRecompensas implements Runnable
-{private Server server;
+{
+    private Server server;
     private Lock lock;
     private Condition condition;
 
@@ -20,20 +18,21 @@ public class ThreadRecompensas implements Runnable
     public void run()
     {
         lock.lock();
+        int conta = 0;
         while(true)
         {
             try
             {
                 condition.await();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
-            System.out.println("Acordei!!");
-            Recompensa recompensa = server.avaliaMapa();
-            if(recompensa != null)
-            {
-                server.addRecompensa(recompensa);
-            }
+            System.out.println("Acordei " + conta);
+            conta++;
+            server.avaliaMapa();
+            server.reverRecompensas();
+            condition.signal();
         }
     }
 }

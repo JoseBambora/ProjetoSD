@@ -1,7 +1,13 @@
 public class Recompensa
 {
-    private int xi;
-    private int yi;
+    /**
+     * 0 0 0 0
+     * 0 0 2 0
+     * 0 0 0 0
+     * 0 0 0 0
+     */
+    private final int xi;
+    private final int yi;
     private int xf;
     private int yf;
     private float premio;
@@ -44,5 +50,21 @@ public class Recompensa
     public int hashCode()
     {
         return cod.hashCode();
+    }
+
+    public int getXi() {
+        return xi;
+    }
+
+    public int getYi() {
+        return yi;
+    }
+
+    public int getXf() {
+        return xf;
+    }
+
+    public int getYf() {
+        return yf;
     }
 }

@@ -8,35 +8,32 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Ver """erro""" de acordar a thread das recompensas.
+ * Server - Cliente
+ * Notificações
+ * Melhorar os testes
+ * Melhorar o código
+ * Fazer relatório
+ */
 public class Server
 {
-    /**
-     * 0 2 0 1
-     * 0 0 0 0
-     * 0 0 0 0
-     *
-     * 0 1 0 1
-     * 1 0 0 0
-     * 0 0 0 0
-     */
-    private Map<String,Cliente> clientes;
+    private final Map<String,Cliente> clientes;
     private Map<String,Cliente> notificacoes;
-    private Map<String,Trotinete> trotinetes;
-    private Map<String,Reserva> reservas;
-    private Map<String,Recompensa> recompensas;
-    private List<List<Integer>> mapa; // número de trotinetes em cada posição
-    private Map<String, ReentrantReadWriteLock> locks;
-    private Map<String, Integer> codigos;
-    private Lock lockthread;
-    private Condition recThread;
-    private Thread recompensaThread;
-    private int raio;
+    private final Map<String,Trotinete> trotinetes;
+    private final Map<String,Reserva> reservas;
+    private final Map<String,Recompensa> recompensas;
+    private final List<List<Integer>> mapa; // número de trotinetes em cada posição
+    private final Map<String, ReentrantReadWriteLock> locks;
+    private final Map<String, Integer> codigos;
+    private final Thread recompensaThread;
+    private final ThreadAcordaThread acorda;
+    private final Thread acordaThread;
+    private final int raio;
     private static final String trotinestesSTR = "Trotinetes";
 
     Server(int raio, int tamanho)
     {
-        this.lockthread = new ReentrantLock();
-        this.recThread = this.lockthread.newCondition();
         this.locks = new HashMap<>();
         this.locks.put("Clientes",new ReentrantReadWriteLock());
         this.locks.put("Notificacoes",new ReentrantReadWriteLock());
@@ -54,7 +51,12 @@ public class Server
         this.reservas = new HashMap<>();
         this.recompensas = new HashMap<>();
         this.trotinetes = new HashMap<>();
-        recompensaThread = new Thread(new ThreadRecompensas(this,lockthread,recThread));
+        Lock lockthread = new ReentrantLock();
+        Condition cond = lockthread.newCondition();
+        this.acorda = new ThreadAcordaThread(lockthread,cond);
+        this.acordaThread = new Thread(this.acorda);
+        this.acordaThread.start();
+        recompensaThread = new Thread(new ThreadRecompensas(this,lockthread,cond));
         recompensaThread.start();
         this.mapa = new ArrayList<>(tamanho);
         for(int i = 0; i < tamanho; i++)
@@ -85,15 +87,61 @@ public class Server
         this.locks.get("Mapa").writeLock().unlock();
 
     }
+
+    public void reverRecompensas()
+    {
+        this.locks.get("Recompensas").writeLock().lock();
+        this.locks.get("Mapa").readLock().lock();
+        List<String> removeRec = new ArrayList<>();
+        for(Recompensa recompensa : this.recompensas.values())
+        {
+            int xi = recompensa.getXi();
+            int yi = recompensa.getYi();
+            if(this.mapa.get(yi).get(xi) < 2)
+                removeRec.add(recompensa.getCod());
+            else
+            {
+                int xf = recompensa.getXf();
+                int yf = recompensa.getYf();
+                if(this.mapa.get(yf).get(xf) > 0)
+                {
+                    boolean alterou = false;
+                    int x, y=0;
+                    for(List<Integer> l : this.mapa)
+                    {
+                        x=0;
+                        for(Integer nrTroti : l)
+                        {
+                            if(nrTroti == 0)
+                            {
+                                recompensa.setXf(x);
+                                recompensa.setYf(y);
+                                alterou = true;
+                            }
+                            x++;
+                        }
+                        y++;
+                    }
+                    if(!alterou)
+                        removeRec.add(recompensa.getCod());
+                }
+            }
+        }
+        for(String cod : removeRec)
+        {
+            this.recompensas.remove(cod);
+        }
+        this.locks.get("Mapa").readLock().unlock();
+        this.locks.get("Recompensas").writeLock().unlock();
+    }
     /**
      * QUANDO ESTACIONA -> REVER RECOMPENSAS :
-     * Acordar threadRecompensa -> criar método de analis Recompensa e verifica se é preciso eliminar alguma
+     * Acordar threadRecompensa -> criar método de analise Recompensa e verifica se é preciso eliminar alguma
      */
     public float estacionamento(String cod, int x, int y)
     {
         this.locks.get(trotinestesSTR).writeLock().lock();
         this.locks.get("Reservas").readLock().lock();
-        this.lockthread.lock();
         this.locks.get("Mapa").writeLock().lock();
         Reserva reserva = this.reservas.get(cod);
         this.locks.get("Reservas").readLock().unlock();
@@ -103,8 +151,7 @@ public class Server
         this.trotinetes.get(reserva.getTrotinete()).liberta();
         this.locks.get(trotinestesSTR).writeLock().unlock();
         float res = reserva.geraCusto(x,y);
-        this.recThread.signal();
-        this.lockthread.unlock();
+        this.acorda.incrementa();
         return res;
     }
     // TESTADO
@@ -120,10 +167,8 @@ public class Server
             int n = this.mapa.get(trotinete1.getY()).get(trotinete1.getX());
             this.mapa.get(trotinete1.getY()).set(trotinete1.getX(), n-1);
             this.locks.get("Mapa").writeLock().unlock();
-            this.lockthread.lock();
             String c = this.getCodigo("Reservas");
-            this.recThread.signal();
-            this.lockthread.unlock();
+            this.acorda.incrementa();
             trotinete1.reserva();
             Reserva reserva = new Reserva(trotinete,trotinete1.getX(), trotinete1.getY(), LocalDateTime.now(),c);
             this.reservas.put(reserva.getCodigo(),reserva);
@@ -170,11 +215,11 @@ public class Server
         this.locks.get("Clientes").readLock().unlock();
         return res;
     }
-    public Recompensa avaliaMapa()
+    public boolean avaliaMapa()
     {
+        Recompensa res = null;
         try
         {
-            Recompensa res = null;
             this.locks.get("Mapa").readLock().lock();
             int xi = 0, yi= 0, xf = -1, yf = -1;
             for(List<Integer> linha : this.mapa)
@@ -189,14 +234,18 @@ public class Server
                         {
                             res.setXf(xf);
                             res.setYf(yf);
-                            return res;
+                            this.addRecompensa(res);
+                            return true;
                         }
                     }
                     if(elem > 1)
                     {
                         res = new Recompensa(xi,yi,xf,yf,30);
                         if(xf != -1)
-                            return res;
+                        {
+                            this.addRecompensa(res);
+                            return true;
+                        }
                     }
                     xi++;
                 }
@@ -208,7 +257,7 @@ public class Server
         {
             this.locks.get("Mapa").readLock().unlock();
         }
-        return null;
+        return false;
     }
 
     @Override
@@ -229,5 +278,22 @@ public class Server
     public void terminaServidor()
     {
         this.recompensaThread.stop();
+        this.acordaThread.stop();
+    }
+
+    public Map<String, Cliente> getClientes() {
+        return clientes;
+    }
+
+    public Map<String, Trotinete> getTrotinetes() {
+        return trotinetes;
+    }
+
+    public Map<String, Reserva> getReservas() {
+        return reservas;
+    }
+
+    public Map<String, Recompensa> getRecompensas() {
+        return recompensas;
     }
 }

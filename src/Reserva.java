@@ -1,13 +1,12 @@
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 
 public class Reserva
 {
-    private String trotinete;
-    private int xinicial;
-    private int yinicial;
-    private LocalDateTime dataDaReserva;
+    private final String trotinete;
+    private final int xinicial;
+    private final int yinicial;
+    private final LocalDateTime dataDaReserva;
     private String codigo;
 
     public Reserva(String trotinete, int xinicial, int yinicial, LocalDateTime dataDaReserva, String codigo)
@@ -41,7 +40,7 @@ public class Reserva
     }
     public float geraCusto(int xf, int yf)
     {
-        return Math.abs(xf - xinicial) + Math.abs(yf - yinicial) * ChronoUnit.MINUTES.between(dataDaReserva, LocalDateTime.now());
+        return Math.abs(xf - xinicial) + Math.abs(yf - yinicial) * (ChronoUnit.MINUTES.between(dataDaReserva, LocalDateTime.now())+1);
     }
     @Override
     public boolean equals(Object o) {

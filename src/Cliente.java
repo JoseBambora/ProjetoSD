@@ -1,7 +1,7 @@
 public class Cliente
 {
-    private String nomeUtilizador;
-    private String password;
+    private final String nomeUtilizador;
+    private final String password;
 
     public Cliente(String nomeUtilizador, String password)
     {
