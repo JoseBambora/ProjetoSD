@@ -12,6 +12,7 @@ public class Recompensa
     private int yf;
     private float premio;
     private String cod;
+    private boolean aceite;
 
     public Recompensa(int xi, int yi, int xf, int yf, float premio)
     {
@@ -20,6 +21,16 @@ public class Recompensa
         this.xf = xf;
         this.yf = yf;
         this.premio = premio;
+        this.aceite = false;
+    }
+
+    public float getPremio() {
+        return premio;
+    }
+
+    public void aceite()
+    {
+        this.aceite = true;
     }
     public void setCod(String cod)
     {
