@@ -4,7 +4,7 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         int num = 10;
-        for(int j = 0; j < 1; j++)
+        for(int j = 0; j < 30; j++)
         {
             Server server = new Server(10,30);
             for(int i = 0; i < num; i++)
@@ -16,6 +16,7 @@ public class Main {
                 threads[i].start();
             for(int i = 0; i < num; i++)
                 threads[i].join();
+            Thread.sleep(100);
             server.terminaServidor();
             Map<String,Cliente> clienteMap = server.getClientes();
             Map<String,Recompensa> recompensas = server.getRecompensas();
@@ -29,7 +30,8 @@ public class Main {
                 System.out.println("Erro reservas");
             if(recompensas.size() != 0)
             {
-                System.out.println("Erro recompensas " + recompensas.size());
+                System.out.println("Erro recompensas 1 " + recompensas.size());
+                System.out.println("Erro recompensas 2 " + recompensas.size());
                 List<List<Integer>> map = server.getMapa();
                 for(Recompensa recompensa : recompensas.values())
                 {
@@ -40,6 +42,16 @@ public class Main {
                     System.out.println(map.get(recompensa.getYf()).get(recompensa.getXf()));
                 }
             }
+            Thread[] threads2 = new Thread[num];
+            for(int i = 0; i < num; i++)
+                threads[i] = new Thread(new ThreadTeste1(server,i+num));
+            for(int i = 0; i < num; i++)
+                threads[i].start();
+            for(int i = 0; i < num; i++)
+                threads[i].join();
+            if(reservas.size() != 20)
+                System.out.println("Errado reservas");
+
         }
     }
 }

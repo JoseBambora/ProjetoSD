@@ -18,7 +18,6 @@ public class ThreadRecompensas implements Runnable
     public void run()
     {
         lock.lock();
-        int conta = 0;
         while(true)
         {
             try
@@ -28,11 +27,7 @@ public class ThreadRecompensas implements Runnable
             {
                 e.printStackTrace();
             }
-            System.out.println("Acordei " + conta);
-            conta++;
-            server.avaliaMapa();
             server.reverRecompensas();
-            condition.signal();
         }
     }
 }
