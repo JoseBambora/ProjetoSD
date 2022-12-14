@@ -1,6 +1,9 @@
 import java.util.List;
 import java.util.Map;
 
+import ScooterServer.*;
+import Testes.*;
+
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         int num = 10;
@@ -42,7 +45,7 @@ public class Main {
                 }
             }
             for(int i = 0; i < num; i++)
-                threads[i] = new Thread(new ThreadTeste1(server,i+num));
+                threads[i] = new Thread(new Testes.ThreadTeste1(server,i+num));
             for(int i = 0; i < num; i++)
                 threads[i].start();
             for(int i = 0; i < num; i++)

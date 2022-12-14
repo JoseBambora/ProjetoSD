@@ -1,3 +1,5 @@
+package ScooterServer;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 
 /**
  * Ver """erro""" de acordar a thread das recompensas.
- * Server - Cliente
+ * ScooterServer.ScooterServer.Server - ScooterServer.Cliente
  * Notificações
  * Melhorar os testes
  * Melhorar o código
@@ -19,11 +21,11 @@ import java.util.stream.Collectors;
  */
 public class Server implements ScooterServer
 {
-    private final Map<String,Cliente> clientes;
-    private Map<String,Cliente> notificacoes;
-    private final Map<String,Trotinete> trotinetes;
-    private final Map<String,Reserva> reservas;
-    private final Map<String,Recompensa> recompensas;
+    private final Map<String, Cliente> clientes;
+    private Map<String, Cliente> notificacoes;
+    private final Map<String, Trotinete> trotinetes;
+    private final Map<String, Reserva> reservas;
+    private final Map<String, Recompensa> recompensas;
     private final List<List<Integer>> mapa; // número de trotinetes em cada posição
     private final Map<String, ReentrantReadWriteLock> locks;
     private final Map<String, Integer> codigos;
@@ -32,7 +34,7 @@ public class Server implements ScooterServer
     private final Condition cond;
     private final int raio;
     private final Map<String,String> reservasRec;
-    Server(int raio, int tamanho)
+    public Server(int raio, int tamanho)
     {
         this.locks = new HashMap<>();
         this.locks.put("Clientes",new ReentrantReadWriteLock());
@@ -262,7 +264,7 @@ public class Server implements ScooterServer
 
     @Override
     public String toString() {
-        return "Server{" + "\n" +
+        return "ScooterServer.ScooterServer.Server{" + "\n" +
                 "clientes=" + clientes + "\n" +
                 ", notificacoes=" + notificacoes + "\n" +
                 ", trotinetes=" + trotinetes + "\n" +
@@ -271,29 +273,9 @@ public class Server implements ScooterServer
                 '}';
     }
 
-    public List<List<Integer>> getMapa() {
-        return mapa;
-    }
-
     public void terminaServidor()
     {
         this.recompensaThread.stop();
-    }
-
-    public Map<String, Cliente> getClientes() {
-        return clientes;
-    }
-
-    public Map<String, Trotinete> getTrotinetes() {
-        return trotinetes;
-    }
-
-    public Map<String, Reserva> getReservas() {
-        return reservas;
-    }
-
-    public Map<String, Recompensa> getRecompensas() {
-        return recompensas;
     }
 
     public List<Trotinete> getTrotinetes(int x, int y)
@@ -313,5 +295,25 @@ public class Server implements ScooterServer
                 .collect(Collectors.toList());
         this.locks.get("Recompensas").readLock().unlock();
         return result;
+    }
+
+    public List<List<Integer>> getMapa() {
+        return mapa;
+    }
+
+    public Map<String, Cliente> getClientes() {
+        return clientes;
+    }
+
+    public Map<String, Trotinete> getTrotinetes() {
+        return trotinetes;
+    }
+
+    public Map<String, Reserva> getReservas() {
+        return reservas;
+    }
+
+    public Map<String, Recompensa> getRecompensas() {
+        return recompensas;
     }
 }

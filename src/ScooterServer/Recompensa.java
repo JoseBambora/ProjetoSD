@@ -1,3 +1,5 @@
+package ScooterServer;
+
 public class Recompensa
 {
     /**

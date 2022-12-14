@@ -1,3 +1,5 @@
+package ScooterServer;
+
 public class Cliente
 {
     private final String nomeUtilizador;

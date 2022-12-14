@@ -1,8 +1,12 @@
+package Testes;
+
+import ScooterServer.*;
+
 public class ThreadTeste implements Runnable
 {
-    private Server server;
+    private ScooterServer server;
     private Integer id;
-    public ThreadTeste(Server server, int id)
+    public ThreadTeste(ScooterServer server, int id)
     {
         this.server = server;
         this.id = id;

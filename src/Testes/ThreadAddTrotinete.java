@@ -1,3 +1,7 @@
+package Testes;
+
+import ScooterServer.*;
+
 public class ThreadAddTrotinete implements Runnable
 {
     private Server server;
