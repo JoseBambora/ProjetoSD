@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Melhorar o código
  * Fazer relatório
  */
-public class Server
+public class Server implements ScooterServer
 {
     private final Map<String,Cliente> clientes;
     private Map<String,Cliente> notificacoes;
@@ -294,5 +294,14 @@ public class Server
 
     public Map<String, Recompensa> getRecompensas() {
         return recompensas;
+    }
+
+    public List<Trotinete> getTrotinetes(int x, int y)
+    {
+        return null;
+    }
+    public List<Recompensa> getRecompensas(int x, int y)
+    {
+        return null;
     }
 }
