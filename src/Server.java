@@ -188,7 +188,7 @@ public class Server implements ScooterServer
 
     private double calculaDist(int x1, int y1, int x2, int y2)
     {
-        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        return Math.abs(x1-x2) + Math.abs(y1-y2);
     }
 
     public Reserva addReserva (int x, int y)
@@ -298,10 +298,20 @@ public class Server implements ScooterServer
 
     public List<Trotinete> getTrotinetes(int x, int y)
     {
-        return null;
+        this.locks.get("Trotinetes").readLock().lock();
+        List<Trotinete> result = this.trotinetes.values().stream().filter(t -> !t.isReservada())
+                .filter(t -> calculaDist(x,y,t.getX(),t.getY()) < this.raio)
+                .collect(Collectors.toList());
+        this.locks.get("Trotinetes").readLock().unlock();
+        return result;
     }
     public List<Recompensa> getRecompensas(int x, int y)
     {
-        return null;
+        this.locks.get("Recompensas").readLock().lock();
+        List<Recompensa> result = this.recompensas.values().stream()
+                .filter(r -> calculaDist(x,y,r.getXi(),r.getYi()) < this.raio)
+                .collect(Collectors.toList());
+        this.locks.get("Recompensas").readLock().unlock();
+        return result;
     }
 }
