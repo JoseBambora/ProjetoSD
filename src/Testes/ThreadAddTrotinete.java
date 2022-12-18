@@ -4,9 +4,9 @@ import ScooterServer.*;
 
 public class ThreadAddTrotinete implements Runnable
 {
-    private Server server;
+    private ScooterServer server;
     private Integer id;
-    public ThreadAddTrotinete(Server server, int id)
+    public ThreadAddTrotinete(ScooterServer server, int id)
     {
         this.server = server;
         this.id = id;

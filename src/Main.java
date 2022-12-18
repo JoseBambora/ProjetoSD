@@ -9,7 +9,8 @@ public class Main {
         int num = 10;
         for(int j = 0; j < 100; j++)
         {
-            Server server = new Server(10,30);
+            /*
+            ScooterServer server = new ScooterServer(10,30);
             for(int i = 0; i < num; i++)
                 server.addTrotinete(i,i);
             Thread[] threads = new Thread[num];
@@ -54,7 +55,7 @@ public class Main {
             if(reservas.size() != 20)
                 System.out.println("Errado reservas");
 
-
+            */
         }
     }
 }

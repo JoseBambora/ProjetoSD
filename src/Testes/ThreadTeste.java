@@ -4,9 +4,9 @@ import ScooterServer.*;
 
 public class ThreadTeste implements Runnable
 {
-    private ScooterServer server;
+    private IScooterServer server;
     private Integer id;
-    public ThreadTeste(ScooterServer server, int id)
+    public ThreadTeste(IScooterServer server, int id)
     {
         this.server = server;
         this.id = id;
