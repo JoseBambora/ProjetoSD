@@ -1,19 +1,8 @@
-import static org.junit.jupiter.api.Assertions.*;
-
 import ScooterServer.IScooterServer;
 import ScooterServer.ScooterServer;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class MainTeste
 {
