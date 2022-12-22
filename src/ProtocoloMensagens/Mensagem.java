@@ -59,7 +59,7 @@ public abstract class Mensagem
         if(f.tipo == 2)
             r = MensagemRecompensas.receive(f);
         if(f.tipo == 3)
-            return r;
+            r = MensagemReservar.receive(f);
         return r;
     }
 }

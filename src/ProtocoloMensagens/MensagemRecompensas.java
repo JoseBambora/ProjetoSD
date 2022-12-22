@@ -2,6 +2,7 @@ package ProtocoloMensagens;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import ScooterServer.Recompensa;
 
 public class MensagemRecompensas extends Mensagem {
     
@@ -36,11 +37,13 @@ public class MensagemRecompensas extends Mensagem {
         byte[] bytes = ByteBuffer.allocate(8).putInt(this.getX()).putInt(this.getY()).array();
         return new Frame(getId(),getTipo("Recompensas"),bytes); 
     }
-    public Frame createFrameResponse(List<String> recompensas)
+    public Frame createFrameResponse(List<Recompensa> recompensas)
     {
-        String s = "RECOMPENSAS:\n";
-        for(String r : recompensas)
-            s += (r + "_____");
+        String s = "RECOMPENSAS:\n------";
+        for(Recompensa r : recompensas)
+            s += ("(" + r.getXi() + "," + r.getYi() + ")" + "->" +
+                  "(" + r.getXf() + "," + r.getYf() + ")" + "  Recompensa :"
+                   + String.format("%.02f", r.getPremio()) + "\n" + "------");
         
         return new Frame(getId(),getTipo("Recompensas"),s.getBytes());
     }
@@ -53,7 +56,7 @@ public class MensagemRecompensas extends Mensagem {
         int y = bb.getInt();
         byte [] strBytes = bb.array();
         String total = new String(strBytes);
-        String [] recompensas = total.split("_____"); 
+        String [] recompensas = total.split("------"); 
 
         return new MensagemRecompensas(frame.tag, x, y, recompensas);
 
