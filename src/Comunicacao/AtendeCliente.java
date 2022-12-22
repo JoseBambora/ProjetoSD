@@ -4,9 +4,11 @@ import ProtocoloMensagens.Frame;
 import ProtocoloMensagens.Mensagem;
 import ProtocoloMensagens.MensagemAutenticacao;
 import ProtocoloMensagens.MensagemRecompensas;
+import ProtocoloMensagens.MensagemReservar;
 import ProtocoloMensagens.MensagemTrotinetes;
 import ScooterServer.IScooterServer;
 import ScooterServer.Recompensa;
+import ScooterServer.Reserva;
 import ScooterServer.Trotinete;
 
 import java.io.*;
@@ -49,12 +51,17 @@ public class AtendeCliente implements Runnable
             else if (mensagem instanceof MensagemRecompensas) 
             {
                 MensagemRecompensas m = (MensagemRecompensas) mensagem;
-                List<String> trotinetesStr = server.getRecompensas(m.getX(), m.getY()).stream()
-                                                   .map(r -> r.toString()).toList();
-                taggedConnection.send(m.createFrameResponse(trotinetesStr));
+                List<Recompensa> recompensas = server.getRecompensas(m.getX(), m.getY());
+                taggedConnection.send(m.createFrameResponse(recompensas));
+            }
+            else if (mensagem instanceof MensagemReservar)
+            {
+                MensagemReservar m = (MensagemReservar) mensagem;
+                Reserva r = server.addReserva(m.getX(), m.getY());
+                taggedConnection.send(m.createFrameResponse(r));
+
+
             }       
-
-
             else
             {
                 MensagemAutenticacao m = new MensagemAutenticacao(mensagem.getId(),"","");

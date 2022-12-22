@@ -1,7 +1,7 @@
 package Comunicacao;
 
-import ScooterServer.IScooterServer;
 import ScooterServer.ScooterServer;
+import ScooterServer.IScooterServer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,7 +11,7 @@ public class Server
 {
     public static void main(String [] args) throws IOException {
         ServerSocket server = new ServerSocket(1584);
-        IScooterServer scooterServer = new ScooterServer(2,30);
+        IScooterServer scooterServer = new ScooterServer(2,5);
         scooterServer.addCliente("seila","seila");
         System.out.println("Servidor inicializado");
         while (true)
