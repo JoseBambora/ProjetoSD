@@ -105,6 +105,7 @@ public class ScooterServer implements IScooterServer
         // notificar clientes
         String c = this.getCodigo("Reservas");
         recompensa.setCod(c);
+        recompensa.calculaPremio();
         this.recompensas.put(recompensa.getCod(),recompensa);
     }
 
@@ -145,11 +146,14 @@ public class ScooterServer implements IScooterServer
                 {
                     xf = xi;
                     yf = yi;
-                    if(res != null)
+                    int finalXf = xf;
+                    int finalYf = yf;
+                    if(res != null && this.recompensas.values().stream().noneMatch(r -> r.getXf() == finalXf && r.getYf() == finalYf))
                     {
                         res.setXf(xf);
                         res.setYf(yf);
                         this.addRecompensa(res);
+                        res = null;
                         xf = yf = -1;
                     }
                 }
@@ -174,11 +178,11 @@ public class ScooterServer implements IScooterServer
     {
         List<String> removeRec = new ArrayList<>();
         this.recompensas.values().stream()
-                .filter(r -> this.mapa.get(r.getYi()).get(r.getXi()) < 2)
+                .filter(r -> this.getRaio(r.getXi(),r.getYi()).stream().filter(n -> n > 0).toList().size() < 2)
                 .forEach(r -> removeRec.add(r.getCod()));
         this.recompensas.values().stream()
-                .filter(r -> this.mapa.get(r.getYi()).get(r.getXi()) > 1)
-                .filter(r -> this.mapa.get(r.getYf()).get(r.getXf()) > 0)
+                .filter(r -> this.getRaio(r.getXi(),r.getYi()).stream().filter(n -> n > 0).toList().size() > 1)
+                .filter(r -> this.getRaio(r.getXi(),r.getYi()).stream().filter(n -> n > 0).toList().size() > 0)
                 .forEach(r -> removeRec.add(r.getCod()));
         removeRec.forEach(this.recompensas::remove);
     }
@@ -196,24 +200,30 @@ public class ScooterServer implements IScooterServer
     // TESTAR PARA VERIFICAR CUSTOS RECOMPENSAS
     public float estacionamento(String cod, int x, int y)
     {
-        this.locks.get("Trotinetes").writeLock().lock();
-        this.locks.get("Reservas").readLock().lock();
-        this.locks.get("Mapa").writeLock().lock();
-        this.locks.get("ReservasRec").readLock().lock();
+        this.locks.get("Reservas").writeLock().lock();
         Reserva reserva = this.reservas.get(cod);
-        this.locks.get("Reservas").readLock().unlock();
-        int n = this.mapa.get(y).get(x);
-        this.mapa.get(y).set(x,n+1);
-        this.locks.get("Mapa").writeLock().unlock();
-        this.trotinetes.get(reserva.getTrotinete()).liberta();
-        this.locks.get("Trotinetes").writeLock().unlock();
-        float res;
-        if(this.reservasRec.containsKey(cod))
-            res = this.recompensas.get(this.reservasRec.get(cod)).getPremio();
+        float res = 0;
+        if(reserva != null)
+        {
+            this.reservas.remove(cod);
+            this.locks.get("Trotinetes").writeLock().lock();
+            this.locks.get("Mapa").writeLock().lock();
+            this.locks.get("ReservasRec").readLock().lock();
+            this.locks.get("Reservas").writeLock().unlock();
+            int n = this.mapa.get(y).get(x);
+            this.mapa.get(y).set(x,n+1);
+            this.locks.get("Mapa").writeLock().unlock();
+            this.trotinetes.get(reserva.getTrotinete()).liberta();
+            this.locks.get("Trotinetes").writeLock().unlock();
+            if(this.reservasRec.containsKey(cod))
+                res = this.recompensas.get(this.reservasRec.get(cod)).getPremio();
+            else
+                res = reserva.geraCusto(x,y);
+            this.locks.get("ReservasRec").readLock().unlock();
+            this.signalRT();
+        }
         else
-            res = reserva.geraCusto(x,y);
-        this.locks.get("ReservasRec").readLock().unlock();
-        this.signalRT();
+            this.locks.get("Reservas").writeLock().unlock();
         return res;
     }
     private Reserva reservaTrotinete (Trotinete trotinete)
@@ -234,7 +244,8 @@ public class ScooterServer implements IScooterServer
     {
         this.locks.get("Trotinetes").writeLock().lock();
         List<Trotinete> trotinetes = this.getTrotinetes(x,y);
-        trotinetes.sort((t1, t2) -> (int) (calculaDist(x, y, t1.getX(), t1.getY()) - calculaDist(x, y, t2.getX(), t2.getY())));
+        if(trotinetes.size() > 1)
+            trotinetes.sort((t1, t2) -> (int) (calculaDist(x, y, t1.getX(), t1.getY()) - calculaDist(x, y, t2.getX(), t2.getY())));
         Reserva reserva = null;
         if(trotinetes.size() > 0)
         {
@@ -252,16 +263,26 @@ public class ScooterServer implements IScooterServer
         return reserva;
     }
 
+    public Map<String, Recompensa> getRecompensas() {
+        return recompensas;
+    }
+
     public void aceitarRecompensa(String cod)
     {
         this.locks.get("Recompensas").writeLock().lock();
         Recompensa recompensa = this.recompensas.get(cod);
-        recompensa.aceite();
-        Reserva res = this.addReserva(recompensa.getXi(), recompensa.getYi());
-        this.locks.get("ReservasRec").writeLock().lock();
-        this.locks.get("Recompensas").writeLock().unlock();
-        this.reservasRec.put(res.getCodigo(),recompensa.getCod());
-        this.locks.get("ReservasRec").writeLock().unlock();
+        if(!recompensa.isAceite())
+        {
+            recompensa.aceite();
+            Reserva res = this.addReserva(recompensa.getXi(), recompensa.getYi());
+            this.locks.get("ReservasRec").writeLock().lock();
+            this.locks.get("Recompensas").writeLock().unlock();
+            this.reservasRec.put(res.getCodigo(),recompensa.getCod());
+            this.locks.get("ReservasRec").writeLock().unlock();
+        }
+        else
+            this.locks.get("Recompensas").writeLock().unlock();
+
     }
 
     private void addClienteMap (String nome, String pass)

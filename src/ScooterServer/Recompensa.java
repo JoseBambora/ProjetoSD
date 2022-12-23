@@ -1,5 +1,8 @@
 package ScooterServer;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 public class Recompensa
 {
     /**
@@ -28,6 +31,18 @@ public class Recompensa
 
     public float getPremio() {
         return premio;
+    }
+
+    public boolean isAceite() {
+        return aceite;
+    }
+
+    public void setPremio(float premio) {
+        this.premio = premio;
+    }
+    public void calculaPremio()
+    {
+        this.premio = Math.abs(xf - xi) + Math.abs(yf - xi);
     }
 
     public void aceite()
