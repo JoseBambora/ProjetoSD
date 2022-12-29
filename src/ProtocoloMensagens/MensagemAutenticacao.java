@@ -1,6 +1,5 @@
 package ProtocoloMensagens;
 
-import java.nio.ByteBuffer;
 
 public class MensagemAutenticacao extends Mensagem
 {
@@ -12,7 +11,7 @@ public class MensagemAutenticacao extends Mensagem
         this.username = username;
         this.password = passoword;
     }
-
+    
     public String getUsername() {
         return username;
     }
