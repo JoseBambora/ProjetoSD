@@ -374,13 +374,11 @@ public class ScooterServer implements IScooterServer
     @Override
     public List<Notificacoes> notifica()
     {
-        this.locks.get("Notificacoes").readLock().lock();
+        this.locks.get("Notificacoes").writeLock().lock();
         List<Notificacoes> list = this.notificacoes.values().stream()
                 .filter(n -> this.recompensas.values().stream()
                         .anyMatch(r -> this.calculaDist(r.getXi(),r.getXf(),n.getX(),n.getY()) > this.raio))
                 .toList();
-        this.locks.get("Notificacoes").writeLock().lock();
-        this.locks.get("Notificacoes").readLock().unlock();
         list.forEach(n -> this.notificacoes.remove(n.getCodigo()));
         this.locks.get("Notificacoes").writeLock().unlock();
         return list;
