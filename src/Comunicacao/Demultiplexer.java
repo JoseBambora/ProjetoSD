@@ -84,8 +84,9 @@ public class Demultiplexer implements AutoCloseable
         {
             this.conditionMap.get(tag).await();
         }
+        byte[] res = this.queueMap.get(tag).remove();
         this.lockMap.unlock();
-        return this.queueMap.get(tag).remove();
+        return res;
     }
     public void close() throws IOException
     {
