@@ -1,4 +1,4 @@
-package g8;
+package Comunicacao;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
