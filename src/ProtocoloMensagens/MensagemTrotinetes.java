@@ -54,8 +54,7 @@ public class MensagemTrotinetes extends Mensagem {
         int y = bb.getInt();
         byte [] strBytes = bb.array();
         String total = new String(strBytes);
-        String [] trotinetes = total.split("_____"); 
-
+        String [] trotinetes = total.split("_____");
         return new MensagemTrotinetes(frame.tag,x,y,trotinetes);
     }
 
