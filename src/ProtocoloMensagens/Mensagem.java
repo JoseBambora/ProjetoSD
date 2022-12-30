@@ -60,6 +60,10 @@ public abstract class Mensagem
             r = MensagemRecompensas.receive(f);
         if(f.tipo == 3)
             r = MensagemReservar.receive(f);
+        if(f.tipo == 4)
+            r = MensagemEstacionamento.receive(f);
+        if(f.tipo == 5)
+            r = MensagemNotificacoes.receive(f);
         return r;
     }
 }

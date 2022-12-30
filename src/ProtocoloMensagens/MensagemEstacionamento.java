@@ -29,7 +29,6 @@ public class MensagemEstacionamento extends Mensagem
     {
         return codigo;
     }
-
     public Frame createFrame()
     {
         byte[] bytes = ByteBuffer.allocate(8 + this.getCodigo().getBytes().length)
@@ -39,16 +38,17 @@ public class MensagemEstacionamento extends Mensagem
     }
     public Frame createFrameResponse(float custo_viagem)
     {
-
         String s = ("\nPreço:\n------" + String.format("%.02f", custo_viagem) + "\n");
-        
         return new Frame(getId(),getTipo("Estacionamento"),s.getBytes());
-
     }
     public static MensagemEstacionamento receive(Frame frame)
     {
         byte []b = frame.data;
-        String total = new String(b);
-        return new MensagemEstacionamento(frame.tag, 0, 0,"", total);
+        ByteBuffer bb = ByteBuffer.wrap(b);
+        int x = bb.getInt();
+        int y = bb.getInt();
+        byte [] strBytes = bb.array();
+        String cod = new String(strBytes);
+        return new MensagemEstacionamento(frame.tag,x,y,cod,"");
     }
 }

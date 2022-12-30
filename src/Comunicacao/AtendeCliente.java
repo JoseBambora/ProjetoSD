@@ -3,6 +3,8 @@ package Comunicacao;
 import ProtocoloMensagens.Frame;
 import ProtocoloMensagens.Mensagem;
 import ProtocoloMensagens.MensagemAutenticacao;
+import ProtocoloMensagens.MensagemEstacionamento;
+import ProtocoloMensagens.MensagemNotificacoes;
 import ProtocoloMensagens.MensagemRecompensas;
 import ProtocoloMensagens.MensagemReservar;
 import ProtocoloMensagens.MensagemTrotinetes;
@@ -13,7 +15,10 @@ import ScooterServer.Trotinete;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AtendeCliente implements Runnable
 {
@@ -61,10 +66,24 @@ public class AtendeCliente implements Runnable
                 taggedConnection.send(m.createFrameResponse(r));
 
 
+            }
+            else if (mensagem instanceof MensagemEstacionamento)
+            {
+                MensagemEstacionamento m = (MensagemEstacionamento) mensagem;
+                Float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY());
+                
+                taggedConnection.send(m.createFrameResponse(custo));
+                
             }       
+            else if (mensagem instanceof MensagemNotificacoes)
+            {
+               
+
+
+            }
             else
             {
-                MensagemAutenticacao m = new MensagemAutenticacao(mensagem.getId(),"","");
+                MensagemAutenticacao m = new MensagemAutenticacao(mensagem.getId(),"","",false);
                 taggedConnection.send(m.createFrameResponse(false));
             }
 
