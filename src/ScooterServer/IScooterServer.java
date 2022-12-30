@@ -1,5 +1,6 @@
 package ScooterServer;
 
+import java.io.DataInputStream;
 import java.util.List;
 
 public interface IScooterServer
@@ -12,4 +13,7 @@ public interface IScooterServer
     public boolean verificaCredenciais(String nome, String pass);
     public List<Trotinete> getTrotinetes(int x, int y);
     public List<Recompensa> getRecompensas(int x, int y);
+
+    public List<Notificacoes> notifica();
+    public void addNotificacao(int x, int y,int tag,DataInputStream toClient);
 }

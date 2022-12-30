@@ -1,5 +1,6 @@
 package ScooterServer;
 
+import java.io.DataInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
@@ -19,16 +20,17 @@ import java.util.stream.Collectors;
 public class ScooterServer implements IScooterServer
 {
     private final Map<String, Cliente> clientes;
-    private Map<String, Cliente> notificacoes;
+    private final Map<String, Notificacoes> notificacoes;
     private final Map<String, Trotinete> trotinetes;
     private final Map<String, Reserva> reservas;
     private final Map<String, Recompensa> recompensas;
     private final List<List<Integer>> mapa; // número de trotinetes em cada posição
     private final Map<String, ReentrantReadWriteLock> locks;
     private final Map<String, Integer> codigos;
-    private final Thread recompensaThread;
     private final Lock lockthread;
     private final Condition cond;
+    private final Lock notilockthread;
+    private final Condition noticond;
     private final int raio;
     private final Map<String,String> reservasRec;
     public ScooterServer(int raio, int tamanho)
@@ -53,10 +55,15 @@ public class ScooterServer implements IScooterServer
         this.recompensas = new HashMap<>();
         this.trotinetes = new HashMap<>();
         this.reservasRec = new HashMap<>();
+        this.notificacoes = new HashMap<>();
         this.lockthread = new ReentrantLock();
         this.cond = lockthread.newCondition();
-        recompensaThread = new Thread(new ThreadRecompensas(this,this.lockthread,this.cond));
+        this.notilockthread = new ReentrantLock();
+        this.noticond = notilockthread.newCondition();
+        Thread recompensaThread = new Thread(new ThreadRecompensas(this,this.lockthread,this.cond));
         recompensaThread.start();
+        Thread notificacoesThread = new Thread(new ThreadNotifica(this,notilockthread,noticond));
+        notificacoesThread.start();
         this.mapa = new ArrayList<>(tamanho);
         for(int i = 0; i < tamanho; i++)
         {
@@ -102,7 +109,9 @@ public class ScooterServer implements IScooterServer
     // TESTADO
     private void addRecompensa(Recompensa recompensa)
     {
-        // notificar clientes
+        notilockthread.lock();
+        noticond.signal();
+        notilockthread.unlock();
         String c = this.getCodigo("Reservas");
         recompensa.setCod(c);
         recompensa.calculaPremio();
@@ -342,6 +351,7 @@ public class ScooterServer implements IScooterServer
     {
         return this.recompensas.values()
                 .stream()
+                .filter(r -> !r.isAceite())
                 .filter(r -> calculaDist(x,y,r.getXi(),r.getYi()) < this.raio)
                 .toList();
     }
@@ -359,5 +369,29 @@ public class ScooterServer implements IScooterServer
         List<Recompensa> result = this.getRecompensasAux(x,y);
         this.locks.get("Recompensas").readLock().unlock();
         return result;
+    }
+
+    @Override
+    public List<Notificacoes> notifica()
+    {
+        this.locks.get("Notificacoes").readLock().lock();
+        List<Notificacoes> list = this.notificacoes.values().stream()
+                .filter(n -> this.recompensas.values().stream()
+                        .anyMatch(r -> this.calculaDist(r.getXi(),r.getXf(),n.getX(),n.getY()) > this.raio))
+                .toList();
+        this.locks.get("Notificacoes").writeLock().lock();
+        this.locks.get("Notificacoes").readLock().unlock();
+        list.forEach(n -> this.notificacoes.remove(n.getCodigo()));
+        this.locks.get("Notificacoes").writeLock().unlock();
+        return list;
+    }
+
+    @Override
+    public void addNotificacao(int x, int y, int tag, DataInputStream toClient)
+    {
+        String cod = this.getCodigo("Notificacoes");
+        this.locks.get("Notificacoes").writeLock().lock();
+        this.notificacoes.put(cod,new Notificacoes(cod,x,y,tag,toClient));
+        this.locks.get("Notificacoes").writeLock().unlock();
     }
 }
