@@ -77,9 +77,10 @@ public class AtendeCliente implements Runnable
             }       
             else if (mensagem instanceof MensagemNotificacoes)
             {
-               
-
-
+                MensagemNotificacoes m = (MensagemNotificacoes) mensagem;
+                //inserir trigger para as notificacoes aqui 
+                taggedConnection.send(m.createFrameResponse());
+                
             }
             else
             {

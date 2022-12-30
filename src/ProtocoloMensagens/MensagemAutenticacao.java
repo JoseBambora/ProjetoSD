@@ -32,7 +32,7 @@ public class MensagemAutenticacao extends Mensagem
     }
     public Frame createFrameResponse(boolean bool)
     {
-        byte [] msg_failure = "Autenticacao invalida...".getBytes();
+        byte [] msg_failure = "INVALIDO".getBytes();
         byte [] msg_sucess = ((login ? "Login " : "Registo ") + "válido! Bem-vindo " + username).getBytes(); 
         if(!bool)
             return new Frame(getId(),getTipo("Autenticacao"),msg_failure);

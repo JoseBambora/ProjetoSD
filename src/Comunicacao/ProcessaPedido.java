@@ -15,22 +15,22 @@ public class ProcessaPedido implements Runnable
     {
         this.demultiplexer = demultiplexer;
         this.mensagem = mensagem;
-
     }
     @Override
     public void run()
     {
+        Frame f = mensagem.createFrame();
         try {
-            demultiplexer.send(mensagem);
+            demultiplexer.send(f);
         } catch (IOException e) {
             
         }
         try {
-            Frame f = demultiplexer.receive();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+            byte[] dados = demultiplexer.receive(mensagem.getId());
+            System.out.println(new String(dados));
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(f);
+        
     }
 }

@@ -1,93 +1,94 @@
 package Comunicacao;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
+import java.net.Socket;
+import java.sql.Connection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import ProtocoloMensagens.*;
 
-public class Demultiplexer implements AutoCloseable {
+import ProtocoloMensagens.Frame;
 
-    private TaggedConnection taggedConnection;
-    private Lock l = new ReentrantLock();
-
-    private IOException exception = null;
-
-    private Map<Integer, Value> map= new HashMap<>();
-
-    private class Value{
-        int waiters = 0;
-        Queue<byte[]> deque = new ArrayDeque<>();
-        Condition c = l.newCondition();
-        public Value(){
-        }
-
+public class Demultiplexer implements AutoCloseable
+{
+    private final TaggedConnection connection;
+    private Map<Integer, Queue<byte[]>> queueMap;
+    private Map<Integer, Condition> conditionMap;
+    private Lock lockMap;
+    public Demultiplexer(TaggedConnection conn)
+    {
+        this.connection = conn;
+        this.queueMap = new HashMap<>();
+        this.conditionMap = new HashMap<>();
+        this.lockMap = new ReentrantLock();
     }
-
-    public Demultiplexer(TaggedConnection conn) {
-        this.taggedConnection = conn;
-
-    }
-    public void start(){
-        new Thread(()->{
-                while (true) {
-                    try {
-                        Frame frame = taggedConnection.receive();
-                        l.lock();
-                        try {
-                            Value value = map.get(frame.tag);
-                            value.waiters++;
-                            if (value == null) {
-                                value = new Value();
-                                map.put(frame.tag, value);
-                            }
-                            value.deque.add(frame.data);
-                            value.c.signal();
-                        } finally {
-                            l.unlock();
-                        }
-                    } catch (IOException e) {
-                       this.exception = e;
-                    }
+    public void start() throws IOException
+    {
+        // Iniciar thread para gerir os pedidos
+        Runnable r = () ->
+        {
+            try
+            {
+                while (true)
+                {
+                    Frame f = this.connection.receive();
+                    this.lockMap.lock();
+                    this.queueMap.get(f.tag).add(f.data);
+                    this.conditionMap.get(f.tag).signal();
+                    this.lockMap.unlock();
                 }
-        }).start();
-    }
-
-    public void send(Frame frame) throws IOException {
-        taggedConnection.send(frame);
-
-    }
-    public void send(Mensagem mensagem) throws IOException {
-        taggedConnection.send(mensagem);
-    }
-    public byte[] receive(int tag) throws IOException, InterruptedException {
-        l.lock();
-        Value v;
-        try {
-            v = map.get(tag);
-            if(v == null){
-                v = new Value();
-                map.put(tag, v);
+            } catch (Exception ignored)
+            {
+                this.lockMap.lock();
+                // CASO DE EXCECAO -> PARAR SERVIDOR
+                this.conditionMap.values().forEach(Condition::signal);
+                this.lockMap.unlock();
             }
-            while (v.deque.isEmpty()){
-                    v.c.await();
-                }
-            byte[] reply = v.deque.poll();
-            if(v.deque.isEmpty() && v.waiters == 0){
-                map.remove(tag);
-            }
-            return  reply;
-        }finally {
-            l.unlock();
+            System.out.println("acabou");
+        };
+        Thread t = new Thread(r);
+        t.start();
+    }
+    public void send(Frame frame) throws IOException
+    {
+        lockMap.lock();
+        int tag = frame.tag;
+        if(!this.queueMap.containsKey(tag))
+        {
+            this.queueMap.put(tag,new LinkedList<>());
+            this.conditionMap.put(tag, lockMap.newCondition());
         }
+        lockMap.unlock();
+        connection.send(frame);
     }
-
-    public void close() throws IOException {
-        taggedConnection.close();
+    public void send(int tag, byte[] data) throws IOException
+    {
+        lockMap.lock();
+        if(!this.queueMap.containsKey(tag))
+        {
+            this.queueMap.put(tag,new LinkedList<>());
+            this.conditionMap.put(tag, lockMap.newCondition());
+        }
+        lockMap.unlock();
+        Frame f = new Frame(tag,0, data);
+        connection.send(f);
     }
-
+    public byte[] receive(int tag) throws IOException, InterruptedException
+    {
+        this.lockMap.lock();
+        while(this.queueMap.get(tag).isEmpty())
+        {
+            this.conditionMap.get(tag).await();
+        }
+        this.lockMap.unlock();
+        return this.queueMap.get(tag).remove();
+    }
+    public void close() throws IOException
+    {
+        connection.close();
+    }
 }

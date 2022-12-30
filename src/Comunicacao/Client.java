@@ -10,13 +10,16 @@ import java.net.Socket;
 
 public class Client
 {
-    public boolean login(BufferedReader reader, Demultiplexer demultiplexer) throws IOException{
+    public boolean login(BufferedReader reader, Demultiplexer demultiplexer) throws IOException, InterruptedException{
         String nome = reader.readLine();
         String pass = reader.readLine();
-        MensagemAutenticacao mensagem = new MensagemAutenticacao(0,nome,pass);
+        MensagemAutenticacao mensagem = new MensagemAutenticacao(0,nome,pass,true);
         demultiplexer.send(mensagem.createFrame());
-        Frame f = demultiplexer.receive();
-        return f.data[0]==(byte)1;
+        byte[] data = demultiplexer.receive(mensagem.getId());
+        String resultado_login = new String(data);
+        System.out.println(resultado_login);
+        return (!resultado_login.equals("INVALIDO"));
+        
     }
     public static void main(String [] args) throws IOException {
         Socket server = new Socket("localhost",1584);
