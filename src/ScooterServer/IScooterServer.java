@@ -1,5 +1,7 @@
 package ScooterServer;
 
+import Comunicacao.TaggedConnection;
+
 import java.io.DataInputStream;
 import java.util.List;
 
@@ -15,5 +17,5 @@ public interface IScooterServer
     public List<Recompensa> getRecompensas(int x, int y);
 
     public List<Notificacoes> notifica();
-    public void addNotificacao(int x, int y,int tag,DataInputStream toClient);
+    public void addNotificacao(int x, int y, int tag, TaggedConnection toClient);
 }

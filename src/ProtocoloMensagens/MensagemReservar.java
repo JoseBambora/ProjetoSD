@@ -36,11 +36,11 @@ public class MensagemReservar extends Mensagem{
     
     public Frame createFrameResponse(Reserva reserva)
     {
-        String s = "RESERVA:\n------";
+        String s = "RESERVA:\n";
         if (reserva == null)
             s+= "Nao existe trotinete no local.";
         else
-            s += s.toString();
+            s += reserva.toString();
         
         return new Frame(getId(),getTipo("Reservar"),s.getBytes());
     }

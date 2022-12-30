@@ -39,13 +39,10 @@ public class MensagemRecompensas extends Mensagem {
     }
     public Frame createFrameResponse(List<Recompensa> recompensas)
     {
-        String s = "RECOMPENSAS:\n------";
+        StringBuilder s = new StringBuilder("RECOMPENSAS:\n");
         for(Recompensa r : recompensas)
-            s += ("(" + r.getXi() + "," + r.getYi() + ")" + "->" +
-                  "(" + r.getXf() + "," + r.getYf() + ")" + "  Recompensa :"
-                   + String.format("%.02f", r.getPremio()) + "\n" + "------");
-        
-        return new Frame(getId(),getTipo("Recompensas"),s.getBytes());
+            s.append("(").append(r.getXi()).append(",").append(r.getYi()).append(")").append("->").append("(").append(r.getXf()).append(",").append(r.getYf()).append(")").append("  Recompensa :").append(String.format("%.02f", r.getPremio())).append("\n").append("------");
+        return new Frame(getId(),getTipo("Recompensas"), s.toString().getBytes());
     }
 
     public static MensagemRecompensas receive(Frame frame)

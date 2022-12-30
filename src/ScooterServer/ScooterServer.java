@@ -1,13 +1,12 @@
 package ScooterServer;
 
-import java.io.DataInputStream;
+import Comunicacao.TaggedConnection;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 /**
  * Ver """erro""" de acordar a thread das recompensas.
@@ -385,7 +384,7 @@ public class ScooterServer implements IScooterServer
     }
 
     @Override
-    public void addNotificacao(int x, int y, int tag, DataInputStream toClient)
+    public void addNotificacao(int x, int y, int tag, TaggedConnection toClient)
     {
         String cod = this.getCodigo("Notificacoes");
         this.locks.get("Notificacoes").writeLock().lock();

@@ -20,16 +20,15 @@ public class ProcessaPedido implements Runnable
     public void run()
     {
         Frame f = mensagem.createFrame();
-        try {
+        try
+        {
             demultiplexer.send(f);
-        } catch (IOException e) {
-            
-        }
-        try {
+            System.out.println("Pedido enviado. À espera de receber resposta");
             byte[] dados = demultiplexer.receive(mensagem.getId());
+            System.out.println("Resposta recebida");
             System.out.println(new String(dados));
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException  | InterruptedException e) {
+            System.out.println("Conexão fechada");
         }
         
     }

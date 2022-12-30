@@ -17,7 +17,7 @@ public class Server
         while (true)
         {
             Socket socket = server.accept();
-            System.out.println("Pedido recebido");
+            System.out.println("Novo cliente");
             TaggedConnection taggedConnection = new TaggedConnection(socket);
             Thread atende = new Thread(new AtendeCliente(taggedConnection, scooterServer));
             atende.start();

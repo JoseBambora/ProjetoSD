@@ -39,11 +39,11 @@ public class MensagemTrotinetes extends Mensagem {
     }
      public Frame createFrameResponse(List<String> trotinetes)
     {
-        String s = "TROTINETES:\n";
+        StringBuilder s = new StringBuilder("TROTINETES:\n");
         for(String t : trotinetes)
-            s += (t + "_____");
+            s.append(t);
         
-        return new Frame(getId(),getTipo("Trotinetes"),s.getBytes());
+        return new Frame(getId(),getTipo("Trotinetes"), s.toString().getBytes());
     }
 
     public static MensagemTrotinetes receive(Frame frame) 
