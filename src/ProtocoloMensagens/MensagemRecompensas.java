@@ -41,7 +41,7 @@ public class MensagemRecompensas extends Mensagem {
     {
         StringBuilder s = new StringBuilder("RECOMPENSAS:\n");
         for(Recompensa r : recompensas)
-            s.append("(").append(r.getXi()).append(",").append(r.getYi()).append(")").append("->").append("(").append(r.getXf()).append(",").append(r.getYf()).append(")").append("  Recompensa :").append(String.format("%.02f", r.getPremio())).append("\n").append("------");
+            s.append(r.toString());
         return new Frame(getId(),getTipo("Recompensas"), s.toString().getBytes());
     }
 

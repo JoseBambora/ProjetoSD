@@ -82,11 +82,12 @@ public class Client
                     case "4":
                         System.out.println("Insira o código da reserva");
                         String codigo = reader.readLine();
+                        System.out.println(codigo);
                         System.out.println("Insira o x:");
                         int x_estacionamento = Integer.parseInt(reader.readLine()); 
                         System.out.println("Insira o y:");
                         int y_estacionamento = Integer.parseInt(reader.readLine());
-                        Mensagem mensagem_estacionamento  = new MensagemEstacionamento(counter, x_estacionamento, y_estacionamento, codigo, "");
+                        Mensagem mensagem_estacionamento  = new MensagemEstacionamento(counter, x_estacionamento, y_estacionamento, codigo);
                         counter++;
                         Thread atende_estacionamento = new Thread(new ProcessaPedido(demultiplexer, mensagem_estacionamento));
                         atende_estacionamento.start();

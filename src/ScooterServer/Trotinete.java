@@ -17,8 +17,10 @@ public class Trotinete
     {
         this.reservada = true;
     }
-    public void liberta()
+    public void liberta(int x, int y)
     {
+        this.x = x;
+        this.y = y;
         this.reservada = false;
     }
 
@@ -52,6 +54,6 @@ public class Trotinete
 
     @Override
     public String toString() {
-        return  !isReservada() ? codigo + " (" + x + "," + y + ")" : "";
+        return  !isReservada() ? "ID Trotinete: " + codigo + ", Coordenadas (" + x + "," + y + ")\n" : "";
     }
 }

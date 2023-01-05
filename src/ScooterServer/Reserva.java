@@ -42,7 +42,7 @@ public class Reserva
     }
     public float geraCusto(int xf, int yf)
     {
-        return Math.abs(xf - xinicial) + Math.abs(yf - yinicial) * (ChronoUnit.MINUTES.between(dataDaReserva, LocalDateTime.now())+1);
+        return Math.abs(xf - xinicial) + Math.abs(yf - yinicial) * (ChronoUnit.SECONDS.between(dataDaReserva, LocalDateTime.now())+1);
     }
     @Override
     public boolean equals(Object o) {
@@ -60,6 +60,6 @@ public class Reserva
 
     @Override
     public String toString() {
-        return "Trot: " + trotinete + ", Cod: " + codigo ;
+        return "Codigo da reserva: " + codigo + "\nTrotinete: " + trotinete + "\nCoordenadas: (" + xinicial + "," + yinicial + ")";
     }
 }

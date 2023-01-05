@@ -25,8 +25,10 @@ public class ProcessaPedido implements Runnable
             demultiplexer.send(f);
             System.out.println("Pedido enviado. À espera de receber resposta");
             byte[] dados = demultiplexer.receive(mensagem.getId());
+            System.out.println("=======================================");
             System.out.println("Resposta recebida");
             System.out.println(new String(dados));
+            System.out.println("=======================================");
         } catch (IOException  | InterruptedException e) {
             System.out.println("Conexão fechada");
         }

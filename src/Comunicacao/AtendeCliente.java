@@ -66,7 +66,7 @@ public class AtendeCliente implements Runnable
                 } else if (mensagem instanceof MensagemEstacionamento) {
                     System.out.println("Pedido de estacionamento recebido");
                     MensagemEstacionamento m = (MensagemEstacionamento) mensagem;
-                    Float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY());
+                    float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY());
 
                     taggedConnection.send(m.createFrameResponse(custo));
 

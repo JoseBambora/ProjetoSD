@@ -11,7 +11,7 @@ public class Server
 {
     public static void main(String [] args) throws IOException {
         ServerSocket server = new ServerSocket(1584);
-        IScooterServer scooterServer = new ScooterServer(2,5);
+        IScooterServer scooterServer = new ScooterServer(4,20);
         scooterServer.addCliente("seila","seila");
         System.out.println("Servidor inicializado");
         while (true)

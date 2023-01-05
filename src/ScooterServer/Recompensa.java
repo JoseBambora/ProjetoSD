@@ -5,12 +5,6 @@ import java.time.temporal.ChronoUnit;
 
 public class Recompensa
 {
-    /**
-     * 0 0 0 0
-     * 0 0 2 0
-     * 0 0 0 0
-     * 0 0 0 0
-     */
     private final int xi;
     private final int yi;
     private int xf;
@@ -19,14 +13,23 @@ public class Recompensa
     private String cod;
     private boolean aceite;
 
-    public Recompensa(int xi, int yi, int xf, int yf, float premio)
+    public Recompensa(int xi, int yi, int xf, int yf)
     {
         this.xi = xi;
         this.yi = yi;
         this.xf = xf;
         this.yf = yf;
-        this.premio = premio;
+        calculaPremio();
         this.aceite = false;
+    }
+    public Recompensa(Recompensa r)
+    {
+        this.xi = r.xi;
+        this.yi = r.yi;
+        this.xf = r.xf;
+        this.yf = r.yf;
+        calculaPremio();
+        this.aceite = r.aceite;
     }
 
     public float getPremio() {
@@ -94,5 +97,10 @@ public class Recompensa
 
     public int getYf() {
         return yf;
+    }
+
+    @Override
+    public String toString() {
+        return "Codigo recompensa: " + this.cod + ", Início (" + xi + "," + yi + ") -> Destino (" + xf + "," + yf + "), Prémio " + premio + "\n";
     }
 }
