@@ -37,6 +37,7 @@ public class Client
         res.add("| 6: ACEITAR RECOMPENSA  |");
         res.add("| 7: SAIR                |");
         res.add("--------------------------");
+        res.add("Selecione uma opção");
         return res;
     }
     public static void main(String [] args) throws IOException {

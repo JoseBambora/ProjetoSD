@@ -27,7 +27,9 @@ public class MensagemAceitaRecompensa extends Mensagem
 
     public Frame createFrameResponse(Recompensa recompensa)
     {
-        String s = "Recompensa Aceite\n" + recompensa.toString();
+        String s = "Recompensa Aceite\n";
+        if(recompensa != null)
+            s += recompensa.toString();
         return new Frame(getId(),getTipo("AceitaRecompensa"),s.getBytes());
     }
 

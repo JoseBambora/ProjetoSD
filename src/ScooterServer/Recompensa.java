@@ -1,8 +1,5 @@
 package ScooterServer;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
 public class Recompensa
 {
     private final int xi;
@@ -12,14 +9,16 @@ public class Recompensa
     private float premio;
     private String cod;
     private boolean aceite;
+    private String troti;
 
-    public Recompensa(int xi, int yi, int xf, int yf)
+    public Recompensa(int xi, int yi, int xf, int yf,String troti)
     {
         this.xi = xi;
         this.yi = yi;
         this.xf = xf;
         this.yf = yf;
         calculaPremio();
+        this.troti = troti;
         this.aceite = false;
     }
     public Recompensa(Recompensa r)
@@ -29,7 +28,12 @@ public class Recompensa
         this.xf = r.xf;
         this.yf = r.yf;
         calculaPremio();
+        this.troti = r.troti;
         this.aceite = r.aceite;
+    }
+
+    public String getTroti() {
+        return troti;
     }
 
     public float getPremio() {
