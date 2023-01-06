@@ -411,6 +411,7 @@ public class ScooterServer implements IScooterServer
         this.locks.get("Recompensas").readLock().lock();
         List<Notificacoes> list = this.notificacoes.values().stream()
                 .filter(n -> this.recompensas.values().stream()
+                        .filter(r -> !r.isAceite())
                         .anyMatch(r -> this.calculaDist(r.getXi(),r.getYi(),n.getX(),n.getY()) <= this.raio))
                 .toList();
         this.locks.get("Recompensas").readLock().unlock();
