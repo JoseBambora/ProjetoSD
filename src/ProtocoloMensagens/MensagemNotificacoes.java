@@ -31,7 +31,7 @@ public class MensagemNotificacoes extends Mensagem {
     }
     public Frame createFrameResponse()
     {
-        byte[] strRes = ("Já existem recompensas nas coordenadas (" + x + "," + y + ")").getBytes(); 
+        byte[] strRes = ("Já existem recompensas perdo das coordenadas (" + x + "," + y + ")").getBytes();
 
         return new Frame(getId(),getTipo("Notificacoes"),strRes);
     }

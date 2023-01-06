@@ -101,6 +101,6 @@ public class Recompensa
 
     @Override
     public String toString() {
-        return "Codigo recompensa: " + this.cod + ", Início (" + xi + "," + yi + ") -> Destino (" + xf + "," + yf + "), Prémio " + premio + "\n";
+        return "Codigo recompensa: " + this.cod + "\nInício: (" + xi + "," + yi + ")\nDestino: (" + xf + "," + yf + ")\nPrémio: " + premio + "\n";
     }
 }

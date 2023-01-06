@@ -3,11 +3,12 @@ package ProtocoloMensagens;
 public abstract class Mensagem
 {
     // 0 -> Autenticacao
-    // 1  ->Trotinetes 
-    // 2  ->Recompensas
-    // 3  ->Reservar
-    // 4  ->Estacionamento
-    // 5  ->Notificacoes  
+    // 1 -> Trotinetes
+    // 2 -> Recompensas
+    // 3 -> Reservar
+    // 4 -> Estacionamento
+    // 5 -> Notificacoes
+    // 6 -> Aceitar Recompensas
     private int id;
     public Mensagem(int id)
     {
@@ -38,6 +39,9 @@ public abstract class Mensagem
             case "Notificacoes":
                 r = 5;
                 break;
+            case "AceitaRecompensa":
+                r = 6;
+                break;
             default:
                 r = -1;
                 break;
@@ -52,18 +56,16 @@ public abstract class Mensagem
     public static Mensagem getMessage(Frame f)
     {
         Mensagem r = null;
-        if(f.tipo == 0)
-            r = MensagemAutenticacao.receive(f);
-        if(f.tipo == 1)
-            r = MensagemTrotinetes.receive(f);
-        if(f.tipo == 2)
-            r = MensagemRecompensas.receive(f);
-        if(f.tipo == 3)
-            r = MensagemReservar.receive(f);
-        if(f.tipo == 4)
-            r = MensagemEstacionamento.receive(f);
-        if(f.tipo == 5)
-            r = MensagemNotificacoes.receive(f);
+        switch (f.tipo)
+        {
+            case 0 -> r = MensagemAutenticacao.receive(f);
+            case 1 -> r = MensagemTrotinetes.receive(f);
+            case 2 -> r = MensagemRecompensas.receive(f);
+            case 3 -> r = MensagemReservar.receive(f);
+            case 4 -> r = MensagemEstacionamento.receive(f);
+            case 5 -> r = MensagemNotificacoes.receive(f);
+            case 6 -> r = MensagemAceitaRecompensa.receive(f);
+        }
         return r;
     }
 }

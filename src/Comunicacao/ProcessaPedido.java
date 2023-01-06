@@ -29,8 +29,10 @@ public class ProcessaPedido implements Runnable
             System.out.println("Resposta recebida");
             System.out.println(new String(dados));
             System.out.println("=======================================");
-        } catch (IOException  | InterruptedException e) {
-            System.out.println("Conexão fechada");
+        }
+        catch (IOException  | InterruptedException e)
+        {
+            System.out.println("Conexão fechada por parte do servidor");
         }
         
     }

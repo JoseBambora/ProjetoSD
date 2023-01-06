@@ -26,7 +26,7 @@ public class Demultiplexer implements AutoCloseable
         this.conditionMap = new HashMap<>();
         this.lockMap = new ReentrantLock();
     }
-    public void start() throws IOException
+    public void start()
     {
         // Iniciar thread para gerir os pedidos
         Runnable r = () ->
@@ -41,14 +41,15 @@ public class Demultiplexer implements AutoCloseable
                     this.conditionMap.get(f.tag).signal();
                     this.lockMap.unlock();
                 }
-            } catch (Exception ignored)
+            }
+            catch (Exception ignored)
             {
                 this.lockMap.lock();
                 // CASO DE EXCECAO -> PARAR SERVIDOR
                 this.conditionMap.values().forEach(Condition::signal);
                 this.lockMap.unlock();
             }
-            System.out.println("acabou");
+            System.out.println("Demultiplexer thread a terminar");
         };
         Thread t = new Thread(r);
         t.start();
@@ -64,18 +65,6 @@ public class Demultiplexer implements AutoCloseable
         }
         lockMap.unlock();
         connection.send(frame);
-    }
-    public void send(int tag, byte[] data) throws IOException
-    {
-        lockMap.lock();
-        if(!this.queueMap.containsKey(tag))
-        {
-            this.queueMap.put(tag,new LinkedList<>());
-            this.conditionMap.put(tag, lockMap.newCondition());
-        }
-        lockMap.unlock();
-        Frame f = new Frame(tag,0, data);
-        connection.send(f);
     }
     public byte[] receive(int tag) throws IOException, InterruptedException
     {

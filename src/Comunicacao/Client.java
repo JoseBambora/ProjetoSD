@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client
 {
@@ -23,17 +25,25 @@ public class Client
         return (!resultado_login.equals("INVALIDO"));
         
     }
+    private static List<String> geraMenu()
+    {
+        List<String> res = new ArrayList<>();
+        res.add("-----------MENU-----------");
+        res.add("| 1: TROTINETES          |");
+        res.add("| 2: RECOMPENSAS         |");
+        res.add("| 3: RESERVAR            |");
+        res.add("| 4: ESTACIONAMENTO      |");
+        res.add("| 5: NOTIFICACOES        |");
+        res.add("| 6: ACEITAR RECOMPENSA  |");
+        res.add("| 7: SAIR                |");
+        res.add("--------------------------");
+        return res;
+    }
     public static void main(String [] args) throws IOException {
         Socket server = new Socket("localhost",1584);
         Demultiplexer demultiplexer = new Demultiplexer(new TaggedConnection(server));
         demultiplexer.start();
-        
-        int counter = 0;
-        //MensagemAutenticacao m = new MensagemAutenticacao(0,"seila","seila");
-        //MensagemTrotinetes m2  = new MensagemTrotinetes(1, 3, 3,new String[1]); recebe reserva
-        //MensagemReservar m3 = new MensagemReservar(3, 1, 0,""); 
-        //System.out.println("Pedido enviado");
-        //taggedConnection.send(m.createFrame());
+        int counter = 1;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         boolean pedidos;
         try {
@@ -42,13 +52,16 @@ public class Client
             System.out.println("Exceção login");
             pedidos = false;
         }
+        List<String> menu = geraMenu();
         if(pedidos)
-            System.out.println("-----MENU------\nTROTINETES-->1\nRECOMPENSAS-->2\nRESERVAR-->3\nESTACIONAMENTO-->4\nNOTIFICACOES-->5");
+            menu.forEach(System.out::println);
         while(pedidos)
         {
             String tipomsg = reader.readLine();
-            if(tipomsg != null){
-                switch(tipomsg){
+            if(tipomsg != null)
+            {
+                switch(tipomsg)
+                {
                     case "1":
                         System.out.println("Insira o x:");
                         int x_trotinete= Integer.parseInt(reader.readLine()); 
@@ -80,14 +93,27 @@ public class Client
                         atende_reserva.start();
                         break;
                     case "4":
-                        System.out.println("Insira o código da reserva");
-                        String codigo = reader.readLine();
-                        System.out.println(codigo);
-                        System.out.println("Insira o x:");
-                        int x_estacionamento = Integer.parseInt(reader.readLine()); 
-                        System.out.println("Insira o y:");
-                        int y_estacionamento = Integer.parseInt(reader.readLine());
-                        Mensagem mensagem_estacionamento  = new MensagemEstacionamento(counter, x_estacionamento, y_estacionamento, codigo);
+                        System.out.println("Recompensa ou Reserva?");
+                        System.out.println("1 - Recompensa");
+                        System.out.println("2 - Reserva");
+                        int rec = Integer.parseInt(reader.readLine());
+                        int x_estacionamento = 0, y_estacionamento = 0;
+                        String codigo = "";
+                        if(rec == 1)
+                        {
+                            System.out.println("Insira o código da recompensa");
+                            codigo = reader.readLine();
+                        }
+                        else if(rec == 2)
+                        {
+                            System.out.println("Insira o código da reserva");
+                            codigo = reader.readLine();
+                            System.out.println("Insira o x:");
+                            x_estacionamento = Integer.parseInt(reader.readLine());
+                            System.out.println("Insira o y:");
+                            y_estacionamento = Integer.parseInt(reader.readLine());
+                        }
+                        Mensagem mensagem_estacionamento  = new MensagemEstacionamento(counter, x_estacionamento, y_estacionamento, codigo,rec == 1);
                         counter++;
                         Thread atende_estacionamento = new Thread(new ProcessaPedido(demultiplexer, mensagem_estacionamento));
                         atende_estacionamento.start();
@@ -102,11 +128,22 @@ public class Client
                         Thread atende_notificacao = new Thread(new ProcessaPedido(demultiplexer, mensagem_notificacao));
                         atende_notificacao.start();
                         break;
+                    case "6":
+                        System.out.println("Insira o código da recompensa");
+                        String cod = reader.readLine();
+                        MensagemAceitaRecompensa mensagem_aceita = new MensagemAceitaRecompensa(counter,cod);
+                        counter++;
+                        Thread atende_aceita = new Thread(new ProcessaPedido(demultiplexer, mensagem_aceita));
+                        atende_aceita.start();
+                        break;
+                    case "7":
+                        pedidos = false;
                     default:
-                        System.out.println("escreva um valor correto");
+                        System.out.println("Escreva um valor correto");
                         break;
                 }
-                System.out.println("-----MENU------\nTROTINETES-->1\nRECOMPENSAS-->2\nRESERVAR-->3\nESTACIONAMENTO-->4\nNOTIFICACOES-->5");
+                if(pedidos)
+                    menu.forEach(System.out::println);
             }
             else
                 pedidos = false;

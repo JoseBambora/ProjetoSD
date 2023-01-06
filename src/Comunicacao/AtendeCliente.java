@@ -1,13 +1,6 @@
 package Comunicacao;
 
-import ProtocoloMensagens.Frame;
-import ProtocoloMensagens.Mensagem;
-import ProtocoloMensagens.MensagemAutenticacao;
-import ProtocoloMensagens.MensagemEstacionamento;
-import ProtocoloMensagens.MensagemNotificacoes;
-import ProtocoloMensagens.MensagemRecompensas;
-import ProtocoloMensagens.MensagemReservar;
-import ProtocoloMensagens.MensagemTrotinetes;
+import ProtocoloMensagens.*;
 import ScooterServer.IScooterServer;
 import ScooterServer.Recompensa;
 import ScooterServer.Reserva;
@@ -34,58 +27,71 @@ public class AtendeCliente implements Runnable
     {
         try
         {
-            while(true) {
+            boolean continua = true;
+            while(continua)
+            {
                 Mensagem mensagem = Mensagem.getMessage(taggedConnection.receive());
-                if (mensagem instanceof MensagemAutenticacao) {
+                if (mensagem instanceof MensagemAutenticacao m)
+                {
                     System.out.println("Pedido de autenticação");
-                    MensagemAutenticacao m = (MensagemAutenticacao) mensagem;
                     boolean b = server.verificaCredenciais(m.getUsername(), m.getPassword());
                     taggedConnection.send(m.createFrameResponse(b));
-                    if (b) {
-                        // continuar a comunicar com o cliente
-                    }
-                } else if (mensagem instanceof MensagemTrotinetes) {
+                    continua = b;
+                }
+                else if (mensagem instanceof MensagemTrotinetes m)
+                {
                     System.out.println("Pedido de trotinetes recebido");
-                    MensagemTrotinetes m = (MensagemTrotinetes) mensagem;
-                    List<String> trotinetesStr = server.getTrotinetes(m.getX(), m.getY()).stream()
-                            .map(t -> t.toString()).toList();
+                    List<String> trotinetesStr = server.getTrotinetes(m.getX(), m.getY())
+                            .stream()
+                            .map(Trotinete::toString)
+                            .toList();
                     taggedConnection.send(m.createFrameResponse(trotinetesStr));
                     System.out.println("Resposta enviada");
-                } else if (mensagem instanceof MensagemRecompensas) {
+                }
+                else if (mensagem instanceof MensagemRecompensas m)
+                {
                     System.out.println("Pedido de recompensas recebido");
-                    MensagemRecompensas m = (MensagemRecompensas) mensagem;
                     List<Recompensa> recompensas = server.getRecompensas(m.getX(), m.getY());
                     taggedConnection.send(m.createFrameResponse(recompensas));
-                } else if (mensagem instanceof MensagemReservar) {
+                }
+                else if (mensagem instanceof MensagemReservar m)
+                {
                     System.out.println("Pedido de reservar recebido");
-                    MensagemReservar m = (MensagemReservar) mensagem;
-                    Reserva r = server.addReserva(m.getX(), m.getY());
+                    Reserva r = server.addReserva(m.getX(), m.getY(),true);
                     taggedConnection.send(m.createFrameResponse(r));
-
-
-                } else if (mensagem instanceof MensagemEstacionamento) {
+                }
+                else if (mensagem instanceof MensagemEstacionamento m)
+                {
                     System.out.println("Pedido de estacionamento recebido");
-                    MensagemEstacionamento m = (MensagemEstacionamento) mensagem;
-                    float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY());
-
+                    float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY(),m.isRecompensa());
                     taggedConnection.send(m.createFrameResponse(custo));
 
-                } else if (mensagem instanceof MensagemNotificacoes) {
+                }
+                else if (mensagem instanceof MensagemNotificacoes m)
+                {
                     System.out.println("Pedido de notificações recebido");
-                    MensagemNotificacoes m = (MensagemNotificacoes) mensagem;
                     server.addNotificacao(m.getX(), m.getY(), m.getId(), taggedConnection);
                     //inserir trigger para as notificacoes aqui
                     //taggedConnection.send(m.createFrameResponse());
 
-                } else {
+                }
+                else if(mensagem instanceof MensagemAceitaRecompensa m)
+                {
+                    System.out.println("Pedido de aceitação de recompensa recebido");
+                    Recompensa res = server.aceitarRecompensa(m.getRecompensa());
+                    taggedConnection.send(m.createFrameResponse(res));
+                }
+                else
+                {
                     System.out.println("Pedido inválido recebido, fechar conexão com cliente");
-                    break;
+                    continua = false;
                 }
             }
             taggedConnection.close();
         }
-        catch (IOException e) {
-            System.out.println("Conexão fechada");
+        catch (IOException e)
+        {
+            System.out.println("Conexão fechada por parte do cliente");
         }
     }
 }

@@ -57,15 +57,5 @@ public class MensagemReservar extends Mensagem{
 
         return new MensagemReservar(frame.tag, x, y, reserva);
 
-    } 
-
-    
-
-
-
-
-
-
-
-    
+    }
 }

@@ -19,6 +19,6 @@ public class ThreadTeste1 implements Runnable
             System.out.println("Erro verifica credenciais 1 " + id);
         if(!server.verificaCredenciais(id.toString(),Integer.toString(id)))
             System.out.println("Erro verifica credenciais 2 " + id);
-        server.addReserva(id-10,id-10);
+        server.addReserva(id-10,id-10,true);
     }
 }

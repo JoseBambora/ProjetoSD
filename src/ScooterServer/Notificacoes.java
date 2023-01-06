@@ -41,7 +41,7 @@ public class Notificacoes
         try
         {
             MensagemNotificacoes mensagemNotificacoes = new MensagemNotificacoes(this.tag,x,y);
-            Frame frame = mensagemNotificacoes.createFrame();
+            Frame frame = mensagemNotificacoes.createFrameResponse();
             this.toClient.send(frame);
         } catch (IOException e) {
             throw new RuntimeException(e);
