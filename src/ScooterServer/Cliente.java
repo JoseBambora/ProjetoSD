@@ -11,16 +11,6 @@ public class Cliente
         this.password = password;
     }
 
-    public String getNomeUtilizador()
-    {
-        return nomeUtilizador;
-    }
-
-    public String getPassword()
-    {
-        return password;
-    }
-
     public boolean verificaPassword(String password)
     {
         return this.password.equals(password);

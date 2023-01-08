@@ -9,7 +9,7 @@ public class Recompensa
     private float premio;
     private String cod;
     private boolean aceite;
-    private String troti;
+    private final String troti;
 
     public Recompensa(int xi, int yi, int xf, int yf,String troti)
     {
@@ -44,9 +44,6 @@ public class Recompensa
         return aceite;
     }
 
-    public void setPremio(float premio) {
-        this.premio = premio;
-    }
     public void calculaPremio()
     {
         this.premio = Math.abs(xf - xi) + Math.abs(yf - xi);

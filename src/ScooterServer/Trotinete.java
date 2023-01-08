@@ -2,7 +2,7 @@ package ScooterServer;
 
 public class Trotinete
 {
-    private String codigo;
+    private final String codigo;
     private int x;
     private int y;
     private boolean reservada;
@@ -32,24 +32,12 @@ public class Trotinete
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
     public int getX() {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     @Override

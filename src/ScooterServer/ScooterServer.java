@@ -8,14 +8,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * Ver """erro""" de acordar a thread das recompensas.
- * ScooterServer.ScooterServer.Comunicacao.Server - ScooterServer.Cliente
- * Notificações
- * Melhorar os testes
- * Melhorar o código
- * Fazer relatório
- */
 public class ScooterServer implements IScooterServer
 {
     private final Map<String, Cliente> clientes;
@@ -23,7 +15,7 @@ public class ScooterServer implements IScooterServer
     private final Map<String, Trotinete> trotinetes;
     private final Map<String, Reserva> reservas;
     private final Map<String, Recompensa> recompensas;
-    private final List<List<Integer>> mapa; // número de trotinetes em cada posição
+    private final List<List<Integer>> mapa;
     private final Map<String, ReentrantReadWriteLock> locks;
     private final Map<String, Integer> codigos;
     private final Lock lockthread;
@@ -104,7 +96,7 @@ public class ScooterServer implements IScooterServer
         }
     }
 
-    // TESTADO
+
     private void addRecompensa(Recompensa recompensa)
     {
         Recompensa add = new Recompensa(recompensa);
@@ -149,7 +141,6 @@ public class ScooterServer implements IScooterServer
         }
         return raio;
     }
-    // USAR O RAIO
     private void addRecompensas()
     {
         Recompensa res = null;
@@ -193,7 +184,6 @@ public class ScooterServer implements IScooterServer
             }
         }
     }
-    // TESTADO
     private void removeRecompensas()
     {
         Set<String> removeRec = new HashSet<>();
@@ -207,7 +197,6 @@ public class ScooterServer implements IScooterServer
                 .forEach(r -> removeRec.add(r.getCod()));
         removeRec.forEach(this.recompensas::remove);
     }
-    // TESTADO
     public void reverRecompensas()
     {
         this.locks.get("Recompensas").writeLock().lock();
@@ -229,7 +218,6 @@ public class ScooterServer implements IScooterServer
         this.trotinetes.get(troti).liberta(x, y);
         this.locks.get("Trotinetes").writeLock().unlock();
     }
-    // TESTAR PARA VERIFICAR CUSTOS RECOMPENSAS
     public float estacionamento(String cod, int x, int y, boolean isRecompensa) {
         float res = 0;
         if (isRecompensa)
@@ -335,7 +323,6 @@ public class ScooterServer implements IScooterServer
             this.clientes.put(nome,cliente);
         }
     }
-    // TESTADO
     public void addCliente(String nome, String pass)
     {
         this.locks.get("Clientes").writeLock().lock();
@@ -352,7 +339,6 @@ public class ScooterServer implements IScooterServer
         return res;
     }
 
-    // TESTADO
     public boolean verificaCredenciais(String nome, String pass)
     {
         this.locks.get("Clientes").readLock().lock();

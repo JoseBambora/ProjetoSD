@@ -3,18 +3,15 @@ package ScooterServer;
 import Comunicacao.TaggedConnection;
 import ProtocoloMensagens.Frame;
 import ProtocoloMensagens.MensagemNotificacoes;
-
-import javax.xml.crypto.Data;
-import java.io.DataInputStream;
 import java.io.IOException;
 
 public class Notificacoes
 {
-    private String codigo;
-    private int x;
-    private int y;
-    private TaggedConnection toClient;
-    private int tag;
+    private final String codigo;
+    private final int x;
+    private final int y;
+    private final TaggedConnection toClient;
+    private final int tag;
     public Notificacoes(String codigo,int x, int y, int tag,TaggedConnection toClient)
     {
         this.codigo = codigo;
