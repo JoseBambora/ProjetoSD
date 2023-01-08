@@ -10,14 +10,20 @@ public class Reserva
     private final int yinicial;
     private final LocalDateTime dataDaReserva;
     private String codigo;
+    private String cliente;
 
-    public Reserva(String trotinete, int xinicial, int yinicial, LocalDateTime dataDaReserva, String codigo)
+    public Reserva(String trotinete, int xinicial, int yinicial, LocalDateTime dataDaReserva, String codigo, String cliente)
     {
         this.trotinete = trotinete;
         this.xinicial = xinicial;
         this.yinicial = yinicial;
         this.dataDaReserva = dataDaReserva;
         this.codigo = codigo;
+        this.cliente = cliente;
+    }
+
+    public String getCliente() {
+        return cliente;
     }
 
     public String getTrotinete() {

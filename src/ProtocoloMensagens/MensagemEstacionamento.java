@@ -42,7 +42,9 @@ public class MensagemEstacionamento extends Mensagem
     public Frame createFrameResponse(float custo_viagem)
     {
         String s = String.format("%.02f", custo_viagem) + "\n";
-        if(recompensa)
+        if(custo_viagem < 0)
+            s = "Erro no estacionamento";
+        else if(recompensa)
             s = "Prémio\n" + s;
         else
             s = "Preço\n" + s;

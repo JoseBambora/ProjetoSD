@@ -27,6 +27,7 @@ public class AtendeCliente implements Runnable
     {
         try
         {
+            String cliente = "";
             boolean continua = true;
             while(continua)
             {
@@ -41,6 +42,8 @@ public class AtendeCliente implements Runnable
                         server.addCliente(m.getUsername(),m.getPassword());
                     taggedConnection.send(m.createFrameResponse(b));
                     continua = b;
+                    if(b)
+                        cliente = m.getUsername();
                 }
                 else if (mensagem instanceof MensagemTrotinetes m)
                 {
@@ -61,13 +64,13 @@ public class AtendeCliente implements Runnable
                 else if (mensagem instanceof MensagemReservar m)
                 {
                     System.out.println("Pedido de reservar recebido");
-                    Reserva r = server.addReserva(m.getX(), m.getY(),true);
+                    Reserva r = server.addReserva(m.getX(), m.getY(),cliente,true);
                     taggedConnection.send(m.createFrameResponse(r));
                 }
                 else if (mensagem instanceof MensagemEstacionamento m)
                 {
                     System.out.println("Pedido de estacionamento recebido");
-                    float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY(),m.isRecompensa());
+                    float custo = server.estacionamento(m.getCodigo(), m.getX(), m.getY(),cliente,m.isRecompensa());
                     taggedConnection.send(m.createFrameResponse(custo));
 
                 }
@@ -82,7 +85,7 @@ public class AtendeCliente implements Runnable
                 else if(mensagem instanceof MensagemAceitaRecompensa m)
                 {
                     System.out.println("Pedido de aceitação de recompensa recebido");
-                    Recompensa res = server.aceitarRecompensa(m.getRecompensa());
+                    Recompensa res = server.aceitarRecompensa(m.getRecompensa(),cliente);
                     taggedConnection.send(m.createFrameResponse(res));
                 }
                 else

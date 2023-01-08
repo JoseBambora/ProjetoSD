@@ -10,6 +10,7 @@ public class Recompensa
     private String cod;
     private boolean aceite;
     private final String troti;
+    private String cliente;
 
     public Recompensa(int xi, int yi, int xf, int yf,String troti)
     {
@@ -20,6 +21,7 @@ public class Recompensa
         calculaPremio();
         this.troti = troti;
         this.aceite = false;
+        cliente = "";
     }
     public Recompensa(Recompensa r)
     {
@@ -49,10 +51,19 @@ public class Recompensa
         this.premio = Math.abs(xf - xi) + Math.abs(yf - xi);
     }
 
-    public void aceite()
+    public void aceite(String cliente)
     {
-        this.aceite = true;
+        if(!aceite)
+        {
+            this.cliente = cliente;
+            this.aceite = true;
+        }
     }
+
+    public String getCliente() {
+        return cliente;
+    }
+
     public void setCod(String cod)
     {
         this.cod = cod;
