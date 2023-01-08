@@ -120,7 +120,7 @@ public class MainTeste
         List<Thread> t2 = new ArrayList<>();
         for(Reserva r : list)
         {
-            t2.add(new Thread(() -> server.estacionamento(r.getCodigo(),r.getXinicial(),r.getYinicial())));
+            t2.add(new Thread(() -> server.estacionamento(r.getCodigo(),r.getXinicial(),r.getYinicial(),false)));
         }
         t2.forEach(Thread::start);
         t2.forEach(t -> {
@@ -137,7 +137,7 @@ public class MainTeste
         for(int i = 0; i < list.size() && i < 6; i++)
         {
             Reserva r = list.get(i);
-            t2.add(new Thread(() -> server.estacionamento(r.getCodigo(),r.getXinicial(),r.getYinicial())));
+            t2.add(new Thread(() -> server.estacionamento(r.getCodigo(),r.getXinicial(),r.getYinicial(),false)));
         }
         t2.forEach(Thread::start);
         t2.forEach(t ->
