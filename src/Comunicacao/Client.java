@@ -25,6 +25,16 @@ public class Client
         return (!resultado_login.equals("INVALIDO"));
         
     }
+    public static void registo(BufferedReader reader, Demultiplexer demultiplexer) throws IOException, InterruptedException{
+        System.out.println("Nome de utilizador");
+        String nome = reader.readLine();
+        System.out.println("Password");
+        String pass = reader.readLine();
+        MensagemAutenticacao mensagem = new MensagemAutenticacao(0,nome,pass,false);
+        demultiplexer.send(mensagem.createFrame());
+        byte[] data = demultiplexer.receive(mensagem.getId());
+        System.out.println(new String(data));
+    }
     private static List<String> geraMenu()
     {
         List<String> res = new ArrayList<>();
@@ -40,18 +50,37 @@ public class Client
         res.add("Selecione uma opção");
         return res;
     }
-    public static void main(String [] args) throws IOException {
+    public static void main(String [] args) throws IOException
+    {
         Socket server = new Socket("localhost",1584);
         Demultiplexer demultiplexer = new Demultiplexer(new TaggedConnection(server));
         demultiplexer.start();
         int counter = 1;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        boolean pedidos;
-        try {
-            pedidos = login(reader,demultiplexer);
-        } catch (InterruptedException e) {
-            System.out.println("Exceção login");
-            pedidos = false;
+        boolean pedidos = false;
+        boolean login = true;
+        while(login)
+        {
+            System.out.println("Login ou registar?");
+            System.out.println("1 - Login");
+            System.out.println("2 - Registar");
+            int login_registo = Integer.parseInt(reader.readLine());
+            try
+            {
+                if (login_registo == 1)
+                {
+                    login = false;
+                    pedidos = login(reader, demultiplexer);
+                }
+                else
+                {
+                    registo(reader, demultiplexer);
+                }
+            }
+            catch (InterruptedException e)
+            {
+                System.out.println("Exceção login");
+            }
         }
         List<String> menu = geraMenu();
         if(pedidos)

@@ -34,7 +34,11 @@ public class AtendeCliente implements Runnable
                 if (mensagem instanceof MensagemAutenticacao m)
                 {
                     System.out.println("Pedido de autenticação");
-                    boolean b = server.verificaCredenciais(m.getUsername(), m.getPassword());
+                    boolean b =  true;
+                    if(m.getLogin())
+                         b = server.verificaCredenciais(m.getUsername(), m.getPassword());
+                    else
+                        server.addCliente(m.getUsername(),m.getPassword());
                     taggedConnection.send(m.createFrameResponse(b));
                     continua = b;
                 }
