@@ -97,7 +97,7 @@ public class MainTeste
                 int finalI = i;
                 int finalJ = j;
                 List<Reserva> r = new ArrayList<>();
-                clientes.add(new Thread(() -> r.add(server.addReserva(finalI, finalJ))));
+                clientes.add(new Thread(() -> r.add(server.addReserva(finalI, finalJ,true))));
                 map.put(j+i*40,r);
             }
         }
