@@ -18,19 +18,19 @@ public class ThreadNotifica implements Runnable
     @Override
     public void run()
     {
-        try
+        lock.lock();
+        while (true)
         {
-            lock.lock();
-            while (true)
+            try
             {
                 condition.await();
-                List<Notificacoes> l = server.notifica();
-                l.forEach(n -> n.escreveMensagem());
             }
-        }
-        catch (InterruptedException e)
-        {
-            throw new RuntimeException(e);
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            List<Notificacoes> l = server.notifica();
+            l.forEach(n -> n.escreveMensagem());
         }
     }
 }
